@@ -76,9 +76,12 @@ def main():
     games = ["data/manUtd/games/april_13_Newcastle.csv" , "data/manUtd/games/april1_Nottingham.csv" , "data/manUtd/april6_ManCity.csv" , "data/manUtd/april10_Lyon.csv", "data/manUtd/march_16_Leicester.csv"]
     for game in range(len(games)):
         clean_csv_data(game)
+    
+    clean_csv_data_game("data/manUtd/games/march13_RealSoc.csv")
+    clean_csv_data_game("data/manUtd/games/march9_arsenal.csv")
+    clean_csv_data_game("data/manUtd/games/march6_RealSoc.csv")
+    clean_csv_data_game("data/manUtd/games/march2_Fulham.csv")
     '''
-    clean_csv_data_game("data/manUtd/games/april6_ManCity.csv")
-    clean_csv_data_game("data/manUtd/games/march_16_Leicester.csv")
-
+    clean_csv_data_game("data/manUtd/games/march9_arsenal.csv")
 if __name__ == "__main__":
     main()
