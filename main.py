@@ -197,6 +197,13 @@ if __name__ == "__main__":
         "data/manUtd/games/april1_Nottingham.csv",
         "data/manUtd/games/april6_ManCity.csv",
         "data/manUtd/games/april10_Lyon.csv",
-        "data/manUtd/games/march_16_Leicester.csv"
+        "data/manUtd/games/march_16_Leicester.csv",
+        "data/manUtd/games/march13_RealSoc.csv",
+        "data/manUtd/games/march9_arsenal.csv",
+        "data/manUtd/games/march6_RealSoc.csv",
+       # "data/manUtd/games/march2_Fulham.csv", #Comment out cos of bad data format since this game went to pens
+        "data/manUtd/games/feb26_ipswich.csv"
     ]
+    
+
     predict_contributions(season_filepath, game_filepaths)

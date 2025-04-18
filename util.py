@@ -82,6 +82,6 @@ def main():
     clean_csv_data_game("data/manUtd/games/march6_RealSoc.csv")
     clean_csv_data_game("data/manUtd/games/march2_Fulham.csv")
     '''
-    clean_csv_data_game("data/manUtd/games/march9_arsenal.csv")
+    clean_csv_data_game("data/manUtd/games/march2_Fulham.csv")
 if __name__ == "__main__":
     main()
