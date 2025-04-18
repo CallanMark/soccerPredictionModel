@@ -1,0 +1,61 @@
+(venv) (base) mark@Marks-MacBook-Air soccerPredictionModel % python main.py
+Loaded teamStats.csv with 20 rows
+Loaded data/manUtd/games/april_13_Newcastle.csv with 16 rows
+Loaded data/manUtd/games/april1_Nottingham.csv with 16 rows
+Loaded data/manUtd/games/april6_ManCity.csv with 14 rows
+Loaded data/manUtd/games/april10_Lyon.csv with 15 rows
+Loaded data/manUtd/games/march_16_Leicester.csv with 16 rows
+Combined game data with 77 rows
+Recent stats computed for 23 players
+Merged dataset with 20 rows
+Training data for goal_outcome created with 67 instances
+Imputed 0 NaN values for goal
+Training AUC for goal: 0.90
+
+Top Player for Goal:
+Player: Alejandro Garnacho
+Probability: 0.617
+Season Gls_90: 0.24
+Recent Avg Gls: 0.60
+
+Top 5 Players for Goal:
+            Player  Probability  Season_Stat  Recent_Stat
+Alejandro Garnacho     0.616980     0.240385         0.60
+    Rasmus Højlund     0.197659     0.170455         0.20
+    Joshua Zirkzee     0.195337     0.192308         0.20
+   Bruno Fernandes     0.169657     0.273038         0.20
+         Leny Yoro     0.078139     0.000000         0.25
+Training data for assist_outcome created with 67 instances
+Imputed 0 NaN values for assist
+Training AUC for assist: 0.95
+
+Top Player for Assist:
+Player: Diogo Dalot
+Probability: 0.573
+Season Ast_90: 0.10
+Recent Avg Ast: 0.60
+
+Top 5 Players for Assist:
+               Player  Probability  Season_Stat  Recent_Stat
+          Diogo Dalot     0.573422     0.098039          0.6
+      Bruno Fernandes     0.393688     0.307167          0.6
+Manuel Ugarte Ribeiro     0.155397     0.000000          0.2
+        Kobbie Mainoo     0.015395     0.000000          0.0
+          Mason Mount     0.012869     0.000000          0.0
+Training data for yellow_card_outcome created with 67 instances
+Imputed 0 NaN values for yellow_card
+Training AUC for yellow_card: 0.94
+
+Top Player for Yellow_card:
+Player: Leny Yoro
+Probability: 0.774
+Season CrdY_90: 0.47
+Recent Avg CrdY: 0.75
+
+Top 5 Players for Yellow_card:
+               Player  Probability  Season_Stat  Recent_Stat
+            Leny Yoro     0.773683     0.467290     0.750000
+Manuel Ugarte Ribeiro     0.602421     0.529412     0.600000
+          Mason Mount     0.501634     0.857143     0.500000
+          Diogo Dalot     0.236431     0.163399     0.400000
+        Kobbie Mainoo     0.180875     0.347222     0.333333
