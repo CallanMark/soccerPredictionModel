@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.metrics import roc_auc_score
 
 
+
 def load_season_data(filepath):
     """Load and preprocess season stats from teamStats.csv."""
     try:
@@ -29,15 +30,23 @@ def load_season_data(filepath):
 def load_game_data(filepaths):
     """Load and preprocess game data from multiple CSVs."""
     all_games = []
+    expected_cols = ['Min', 'Gls', 'Ast', 'PK', 'PKatt', 'Sh', 'SoT', 'CrdY', 'CrdR', 
+                     'Touches', 'Tkl', 'Int', 'Blocks', 'xG', 'npxG', 'xAG', 'SCA', 'GCA', 
+                     'Cmp', 'Att', 'Cmp%', 'PrgP', 'Carries', 'PrgC', 'Att', 'Succ', 
+                     'Fls', 'Fld', 'Off']
     for filepath in filepaths:
         try:
             df = pd.read_csv(filepath)
             print(f"Loaded {filepath} with {len(df)} rows")
             df.columns = df.columns.str.strip()
-            numeric_cols = ['Min', 'Gls', 'Ast', 'PK', 'PKatt', 'Sh', 'SoT', 'CrdY', 'CrdR', 
-                            'Touches', 'Tkl', 'Int', 'Blocks', 'xG', 'npxG', 'xAG', 'SCA', 'GCA', 
-                            'Cmp', 'Att', 'Cmp%', 'PrgP', 'Carries', 'PrgC', 'Att', 'Succ']
-            for col in numeric_cols:
+            available_cols = [col for col in expected_cols if col in df.columns]
+            missing_cols = [col for col in expected_cols if col not in df.columns]
+            print(f"Available columns in {filepath}: {available_cols}")
+            if missing_cols:
+                print(f"Missing columns in {filepath}: {missing_cols}")
+                for col in missing_cols:
+                    df[col] = 0
+            for col in expected_cols:
                 df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
             all_games.append(df)
         except FileNotFoundError:
@@ -52,24 +61,14 @@ def load_game_data(filepaths):
 
 def prepare_features(season_df, game_df):
     """Engineer features for prediction."""
-    recent_stats = game_df.groupby('Player').agg({
-        'Gls': 'mean',
-        'Ast': 'mean',
-        'CrdY': 'mean',
-        'Sh': 'mean',
-        'SoT': 'mean',
-        'xG': 'mean',
-        'xAG': 'mean',
-        'SCA': 'mean',
-        'GCA': 'mean',
-        'Tkl': 'mean',
-        'Int': 'mean',
-        'Min': 'sum'
-    }).reset_index()
-    recent_stats.columns = ['Player', 'avg_Gls_recent', 'avg_Ast_recent', 'avg_CrdY_recent', 
-                           'avg_Sh_recent', 'avg_SoT_recent', 'avg_xG_recent', 'avg_xAG_recent', 
-                           'avg_SCA_recent', 'avg_GCA_recent', 'avg_Tkl_recent', 'avg_Int_recent', 
-                           'total_Min_recent']
+    agg_cols = ['Gls', 'Ast', 'CrdY', 'Sh', 'SoT', 'Fls', 'Fld', 'Off', 'Tkl', 'Int', 
+                'xG', 'xAG', 'SCA', 'GCA', 'Min']
+    available_agg_cols = [col for col in agg_cols if col in game_df.columns]
+    agg_dict = {col: 'mean' for col in available_agg_cols if col != 'Min'}
+    agg_dict['Min'] = 'sum' if 'Min' in available_agg_cols else None
+    
+    recent_stats = game_df.groupby('Player').agg(agg_dict).reset_index()
+    recent_stats.columns = ['Player'] + [f'avg_{col}_recent' for col in available_agg_cols if col != 'Min'] + ['total_Min_recent']
     print(f"Recent stats computed for {len(recent_stats)} players")
     
     merged_df = pd.merge(season_df, recent_stats, on='Player', how='left')
@@ -93,11 +92,28 @@ def prepare_features(season_df, game_df):
         print(merged_df[nan_cols].isna().sum())
     
     feature_cols = {
-        'goal': ['Gls_90', 'xG_90', 'npxG_90', 'PrgC_90', 'avg_Gls_recent', 'avg_Sh_recent', 
-                 'avg_SoT_recent', 'avg_xG_recent'],
-        'assist': ['Ast_90', 'xAG_90', 'PrgC_90', 'PrgP_90', 'avg_Ast_recent', 'avg_xAG_recent', 
-                   'avg_SCA_recent', 'avg_GCA_recent'],
-        'yellow_card': ['CrdY_90', 'avg_CrdY_recent', 'avg_Tkl_recent', 'avg_Int_recent']
+        'goal': ['Gls_90', 'xG_90', 'npxG_90', 'PrgC_90'] + 
+                [f'avg_{col}_recent' for col in ['Gls', 'Sh', 'SoT', 'xG'] if col in available_agg_cols],
+        'assist': ['Ast_90', 'xAG_90', 'PrgC_90', 'PrgP_90'] + 
+                  [f'avg_{col}_recent' for col in ['Ast', 'xAG', 'SCA', 'GCA'] if col in available_agg_cols],
+        'yellow_card': ['CrdY_90'] + 
+                       [f'avg_{col}_recent' for col in ['CrdY', 'Tkl', 'Int'] if col in available_agg_cols],
+        'shot': ['Gls_90', 'xG_90', 'npxG_90', 'PrgC_90'] + 
+                [f'avg_{col}_recent' for col in ['Sh', 'SoT', 'xG'] if col in available_agg_cols],
+        'shot_on_target': ['Gls_90', 'xG_90', 'npxG_90', 'PrgC_90'] + 
+                          [f'avg_{col}_recent' for col in ['SoT', 'Sh', 'xG'] if col in available_agg_cols],
+        'foul_committed': ['CrdY_90', 'PrgC_90'] + 
+                          [f'avg_{col}_recent' for col in ['Fls', 'CrdY', 'Tkl'] if col in available_agg_cols],
+        'foul_drawn': ['PrgC_90', 'PrgP_90'] + 
+                      [f'avg_{col}_recent' for col in ['Fld', 'Sh', 'xG'] if col in available_agg_cols],
+        'offside': ['Gls_90', 'xG_90', 'PrgC_90'] + 
+                   [f'avg_{col}_recent' for col in ['Off', 'Sh', 'xG'] if col in available_agg_cols],
+        'tackle': ['CrdY_90'] + 
+                  [f'avg_{col}_recent' for col in ['Tkl', 'Int', 'CrdY'] if col in available_agg_cols],
+        'interception': ['CrdY_90'] + 
+                        [f'avg_{col}_recent' for col in ['Int', 'Tkl', 'CrdY'] if col in available_agg_cols],
+        'key_pass': ['Ast_90', 'xAG_90', 'PrgP_90'] + 
+                    [f'avg_{col}_recent' for col in ['SCA', 'GCA', 'xAG', 'Ast'] if col in available_agg_cols]
     }
     return merged_df, feature_cols
 
@@ -117,27 +133,37 @@ def create_training_data(game_df, feature_df, feature_cols, target_col, target_n
     return training_df
 
 def predict_contributions(season_filepath, game_filepaths):
-    """Predict players most likely to score, assist, or receive a yellow card."""
+    """Predict players most likely to contribute in various categories."""
     season_df = load_season_data(season_filepath)
     game_df = load_game_data(game_filepaths)
+    
     feature_df, feature_cols_dict = prepare_features(season_df, game_df)
     
     predictions = {}
     for target, feature_cols in feature_cols_dict.items():
-        target_col = {'goal': 'Gls', 'assist': 'Ast', 'yellow_card': 'CrdY'}[target]
+        target_col = {
+            'goal': 'Gls', 'assist': 'Ast', 'yellow_card': 'CrdY', 'shot': 'Sh', 
+            'shot_on_target': 'SoT', 'foul_committed': 'Fls', 'foul_drawn': 'Fld', 
+            'offside': 'Off', 'tackle': 'Tkl', 'interception': 'Int', 'key_pass': 'SCA'
+        }[target]
         target_name = f"{target}_outcome"
         
         training_df = create_training_data(game_df, feature_df, feature_cols, target_col, target_name)
         
         if training_df[target_name].sum() == 0:
             print(f"Warning: No {target}s in training data. Falling back to stat-based ranking.")
-            stat_col = {'goal': 'xG_90', 'assist': 'xAG_90', 'yellow_card': 'CrdY_90'}[target]
-            recent_stat = {'goal': 'avg_xG_recent', 'assist': 'avg_xAG_recent', 'yellow_card': 'avg_CrdY_recent'}[target]
+            stat_col = {
+                'goal': 'xG_90', 'assist': 'xAG_90', 'yellow_card': 'CrdY_90', 
+                'shot': 'xG_90', 'shot_on_target': 'xG_90', 'foul_committed': 'CrdY_90', 
+                'foul_drawn': 'PrgC_90', 'offside': 'xG_90', 'tackle': 'CrdY_90', 
+                'interception': 'CrdY_90', 'key_pass': 'xAG_90'
+            }[target]
+            recent_stat = f'avg_{target_col}_recent' if f'avg_{target_col}_recent' in feature_df.columns else 'total_Min_recent'
             pred_df = feature_df[['Player', stat_col, recent_stat]].copy()
             pred_df['Probability'] = pred_df[stat_col] / pred_df[stat_col].max()
             pred_df = pred_df.sort_values('Probability', ascending=False)
             predictions[target] = pred_df
-            print(f"\nTop Player for {target.capitalize()} (Stat-based):")
+            print(f"\nTop Player for {target.replace('_', ' ').title()} (Stat-based):")
             top_player = pred_df.iloc[0]
             print(f"Player: {top_player['Player']}")
             print(f"Normalized Probability: {top_player['Probability']:.3f}")
@@ -172,20 +198,20 @@ def predict_contributions(season_filepath, game_filepaths):
         pred_df = pd.DataFrame({
             'Player': feature_df['Player'],
             'Probability': probabilities,
-            'Season_Stat': feature_df[feature_cols[0]],  # e.g., Gls_90, Ast_90, CrdY_90
-            'Recent_Stat': feature_df[f'avg_{target_col}_recent']
+            'Season_Stat': feature_df[feature_cols[0]],
+            'Recent_Stat': feature_df.get(f'avg_{target_col}_recent', feature_df['total_Min_recent'])
         })
         pred_df = pred_df.sort_values('Probability', ascending=False)
         predictions[target] = pred_df
         
-        print(f"\nTop Player for {target.capitalize()}:")
+        print(f"\nTop Player for {target.replace('_', ' ').title()}:")
         top_player = pred_df.iloc[0]
         print(f"Player: {top_player['Player']}")
         print(f"Probability: {top_player['Probability']:.3f}")
         print(f"Season {feature_cols[0]}: {top_player['Season_Stat']:.2f}")
         print(f"Recent Avg {target_col}: {top_player['Recent_Stat']:.2f}")
         
-        print(f"\nTop 5 Players for {target.capitalize()}:")
+        print(f"\nTop 5 Players for {target.replace('_', ' ').title()}:")
         print(pred_df[['Player', 'Probability', 'Season_Stat', 'Recent_Stat']].head(5).to_string(index=False))
     
     return predictions

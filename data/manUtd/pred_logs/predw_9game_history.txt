@@ -1,0 +1,64 @@
+Loaded teamStats.csv with 20 rows
+Loaded data/manUtd/games/april_13_Newcastle.csv with 16 rows
+Loaded data/manUtd/games/april1_Nottingham.csv with 16 rows
+Loaded data/manUtd/games/april6_ManCity.csv with 14 rows
+Loaded data/manUtd/games/april10_Lyon.csv with 15 rows
+Loaded data/manUtd/games/march_16_Leicester.csv with 16 rows
+Loaded data/manUtd/games/march13_RealSoc.csv with 13 rows
+Loaded data/manUtd/games/march9_arsenal.csv with 14 rows
+Loaded data/manUtd/games/march6_RealSoc.csv with 14 rows
+Loaded data/manUtd/games/feb26_ipswich.csv with 15 rows
+Combined game data with 133 rows
+Recent stats computed for 23 players
+Merged dataset with 20 rows
+Training data for goal_outcome created with 118 instances
+Imputed 0 NaN values for goal
+Training AUC for goal: 0.83
+
+Top Player for Goal:
+Player: Bruno Fernandes
+Probability: 0.391
+Season Gls_90: 0.27
+Recent Avg Gls: 0.56
+
+Top 5 Players for Goal:
+            Player  Probability  Season_Stat  Recent_Stat
+   Bruno Fernandes     0.390910     0.273038     0.555556
+Alejandro Garnacho     0.324052     0.240385     0.333333
+     Harry Maguire     0.255408     0.063291     0.333333
+    Joshua Zirkzee     0.220964     0.192308     0.222222
+  Matthijs de Ligt     0.097387     0.086207     0.200000
+Training data for assist_outcome created with 118 instances
+Imputed 0 NaN values for assist
+Training AUC for assist: 0.89
+
+Top Player for Assist:
+Player: Diogo Dalot
+Probability: 0.381
+Season Ast_90: 0.10
+Recent Avg Ast: 0.33
+
+Top 5 Players for Assist:
+               Player  Probability  Season_Stat  Recent_Stat
+          Diogo Dalot     0.380833     0.098039     0.333333
+      Bruno Fernandes     0.314698     0.307167     0.444444
+   Alejandro Garnacho     0.195395     0.048077     0.222222
+Manuel Ugarte Ribeiro     0.084691     0.000000     0.166667
+       Rasmus Højlund     0.052066     0.000000     0.111111
+Training data for yellow_card_outcome created with 118 instances
+Imputed 0 NaN values for yellow_card
+Training AUC for yellow_card: 0.86
+
+Top Player for Yellow_card:
+Player: Leny Yoro
+Probability: 0.635
+Season CrdY_90: 0.47
+Recent Avg CrdY: 0.57
+
+Top 5 Players for Yellow_card:
+               Player  Probability  Season_Stat  Recent_Stat
+            Leny Yoro     0.634853     0.467290     0.571429
+Manuel Ugarte Ribeiro     0.513725     0.529412     0.500000
+          Mason Mount     0.434141     0.857143     0.500000
+        Kobbie Mainoo     0.240633     0.347222     0.333333
+          Diogo Dalot     0.166385     0.163399     0.222222
