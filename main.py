@@ -217,18 +217,18 @@ def predict_contributions(season_filepath, game_filepaths):
     return predictions
 
 if __name__ == "__main__":
-    season_filepath = "data/manUtd/teamStats.csv"
+    season_filepath = "data/manUtd/csv/teamStats.csv"
     game_filepaths = [
-        "data/manUtd/games/april_13_Newcastle.csv",
-        "data/manUtd/games/april1_Nottingham.csv",
-        "data/manUtd/games/april6_ManCity.csv",
-        "data/manUtd/games/april10_Lyon.csv",
-        "data/manUtd/games/march_16_Leicester.csv",
-        "data/manUtd/games/march13_RealSoc.csv",
-        "data/manUtd/games/march9_arsenal.csv",
-        "data/manUtd/games/march6_RealSoc.csv",
-       # "data/manUtd/games/march2_Fulham.csv", #Comment out cos of bad data format since this game went to pens
-        "data/manUtd/games/feb26_ipswich.csv"
+        "data/manUtd/csv/games/april_13_Newcastle.csv",
+        "data/manUtd/csv/games/april1_Nottingham.csv",
+        "data/manUtd/csv/games/april6_ManCity.csv",
+        "data/manUtd/csv/games/april10_Lyon.csv",
+        "data/manUtd/csv/games/march_16_Leicester.csv",
+        "data/manUtd/csv/games/march13_RealSoc.csv",
+        "data/manUtd/csv/games/march9_arsenal.csv",
+        "data/manUtd/csv/games/march6_RealSoc.csv",
+       # "data/manUtd/csv/games/march2_Fulham.csv", #Comment out cos of bad data format since this game went to pens
+        "data/manUtd/csv/games/feb26_ipswich.csv"
     ]
     
 
